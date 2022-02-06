@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { UserRO } from 'src/common/types';
 import { UserDto } from './dtos/user.dto';
-import { UserRO } from './interfaces/user.interface';
 import { User } from './user.entity';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class UserService {
   ) {}
 
   async showAll(): Promise<UserRO[]> {
-    const users = await this.userRpository.find();
+    const users = await this.userRpository.find({ relations: ['ideas'] });
     return users.map((user) => user.toResponseObject());
   }
 

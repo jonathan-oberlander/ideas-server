@@ -1,45 +1,98 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Idea } from './idea.entity';
 import { CreateIdeaDto } from './dtos/create-idea.dto';
+import { User } from 'src/user/user.entity';
+import { IdeaRO } from 'src/common/types';
 
 @Injectable()
 export class IdeaService {
   constructor(
     @InjectRepository(Idea)
     private ideaRepository: Repository<Idea>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
-  async showAll(): Promise<Idea[]> {
-    return await this.ideaRepository.find();
+  private toResponseObject(idea: Idea): IdeaRO {
+    return { ...idea, author: idea?.author?.toResponseObject() };
   }
 
-  async create(createIdea: CreateIdeaDto): Promise<Idea> {
-    const idea = this.ideaRepository.create(createIdea);
+  private ensureOwnerShip(idea: Idea, userId: string) {
+    if (idea.author.uuid !== userId) {
+      throw new UnauthorizedException('Invalid User');
+    }
+  }
+
+  async showAll(): Promise<IdeaRO[]> {
+    const ideas = await this.ideaRepository.find({ relations: ['author'] });
+    return ideas.map(this.toResponseObject);
+  }
+
+  async create(userId: string, data: CreateIdeaDto): Promise<IdeaRO> {
+    const user = await this.userRepository.findOne({ where: { uuid: userId } });
+    const idea = this.ideaRepository.create({ ...data, author: user });
     await this.ideaRepository.save(idea);
-    return idea;
+    return this.toResponseObject(idea);
   }
 
-  async read(uuid: string): Promise<Idea> {
-    const idea = await this.ideaRepository.findOne({ where: { uuid } });
+  async read(uuid: string): Promise<IdeaRO> {
+    const idea = await this.ideaRepository.findOne({
+      where: { uuid },
+      relations: ['author'],
+    });
+
     if (!idea) {
       throw new NotFoundException();
     }
-    return idea;
+
+    return this.toResponseObject(idea);
   }
 
-  async update(uuid: string, data: Partial<CreateIdeaDto>): Promise<Idea> {
-    await this.ideaRepository.update({ uuid: uuid }, data);
-    return await this.read(uuid);
+  async update(
+    ideaId: string,
+    userId: string,
+    data: Partial<CreateIdeaDto>,
+  ): Promise<IdeaRO> {
+    const idea = await this.ideaRepository.findOne({
+      where: { uuid: ideaId },
+      relations: ['author'],
+    });
+
+    if (!idea) {
+      throw new NotFoundException();
+    }
+
+    this.ensureOwnerShip(idea, userId);
+
+    await this.ideaRepository.update({ uuid: ideaId }, data);
+    return await this.read(ideaId);
   }
 
-  async destroy(uuid: string): Promise<{
-    deleted: Idea;
+  async destroy(
+    ideaId: string,
+    userId: string,
+  ): Promise<{
+    deleted: IdeaRO;
   }> {
-    const idea = await this.read(uuid);
-    await this.ideaRepository.delete(uuid);
-    return { deleted: idea };
+    const idea = await this.ideaRepository.findOne({
+      where: { uuid: ideaId },
+      relations: ['author'],
+    });
+
+    if (!idea) {
+      throw new NotFoundException();
+    }
+
+    this.ensureOwnerShip(idea, userId);
+
+    await this.ideaRepository.delete(ideaId);
+    return { deleted: this.toResponseObject(idea) };
   }
 }

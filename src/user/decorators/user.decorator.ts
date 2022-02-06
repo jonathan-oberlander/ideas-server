@@ -1,6 +1,11 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { RequestWithUserToken } from 'src/common/types';
-import { UserToken } from '../interfaces/user.interface';
+export interface UserToken {
+  username: string;
+  uuid: string;
+  iat: number;
+  exp: number;
+}
 
 export const User = createParamDecorator(
   (data: string, ctx: ExecutionContext): UserToken => {

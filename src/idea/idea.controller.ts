@@ -8,8 +8,12 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
+import { User } from 'src/user/decorators/user.decorator';
 import { CreateIdeaDto } from './dtos/create-idea.dto';
 import { UpdateIdeaDto } from './dtos/update-idea.dto';
 import { IdeaService } from './idea.service';
@@ -20,33 +24,50 @@ export class IdeaController {
 
   constructor(private ideaService: IdeaService) {}
 
+  logData(options: any) {
+    options.id && this.logger.log('ID ' + JSON.stringify(options.id));
+    options.data && this.logger.log('DATA ' + JSON.stringify(options.data));
+    options.user && this.logger.log('USER ' + JSON.stringify(options.user));
+  }
+
   @Get()
   showAllIdeas() {
     return this.ideaService.showAll();
   }
 
   @Post()
-  createIdea(@Body(new ValidationPipe()) data: CreateIdeaDto) {
-    this.logger.log(JSON.stringify(data));
-    return this.ideaService.create(data);
+  @UseGuards(AuthGuard)
+  createIdea(
+    @User('uuid') user: string,
+    @Body(new ValidationPipe()) data: CreateIdeaDto,
+  ) {
+    this.logData({ user, data });
+    return this.ideaService.create(user, data);
   }
 
   @Get('/:uuid')
-  readIdea(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.ideaService.read(uuid);
+  readIdea(@Param('uuid', ParseUUIDPipe) id: string) {
+    return this.ideaService.read(id);
   }
 
   @Put('/:uuid')
+  @UseGuards(AuthGuard)
   updateIdea(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('uuid', ParseUUIDPipe) id: string,
+    @User('uuid') user: string,
     @Body(new ValidationPipe()) data: UpdateIdeaDto,
   ) {
-    this.logger.log(JSON.stringify(data));
-    return this.ideaService.update(uuid, data);
+    this.logData({ id, user, data });
+    return this.ideaService.update(id, user, data);
   }
 
   @Delete('/:uuid')
-  destroyIdea(@Param('uuid', ParseUUIDPipe) uuid: string) {
-    return this.ideaService.destroy(uuid);
+  @UseGuards(AuthGuard)
+  destroyIdea(
+    @Param('uuid', ParseUUIDPipe) id: string,
+    @User('uuid') user: string,
+  ) {
+    this.logData({ id, user });
+    return this.ideaService.destroy(id, user);
   }
 }
