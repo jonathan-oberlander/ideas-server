@@ -4,3 +4,10 @@ export interface UserRO {
   username: string;
   token?: string;
 }
+
+export interface UserToken {
+  username: string;
+  uuid: string;
+  iat: number;
+  exp: number;
+}
