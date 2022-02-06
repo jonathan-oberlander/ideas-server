@@ -23,8 +23,7 @@ export class UserService {
   async login(data: UserDto): Promise<UserRO> {
     const { username, password } = data;
     const user = await this.userRpository.findOne({ where: { username } });
-    const match = await user.matchPassword(password);
-    if (!user || !match) {
+    if (!user || !(await user.matchPassword(password))) {
       throw new UnauthorizedException('Invalid username/password');
     }
     return user.toResponseObject({ showToken: true });
