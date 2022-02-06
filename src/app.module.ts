@@ -9,6 +9,8 @@ import configuration from './config/configuration';
 
 import { HttpExceptionFilter } from './common/filters/http-exeption.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { UserModule } from './user/user.module';
+import { User } from './user/user.entity';
 
 const {
   database: { port, host },
@@ -26,11 +28,12 @@ const {
       username: 'postgres',
       password: '',
       database: 'ideas',
-      entities: [Idea],
+      entities: [Idea, User],
       synchronize: true,
       logging: true,
     }),
     IdeaModule,
+    UserModule,
   ],
   providers: [
     {

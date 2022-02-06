@@ -14,7 +14,7 @@ import { CreateIdeaDto } from './dtos/create-idea.dto';
 import { UpdateIdeaDto } from './dtos/update-idea.dto';
 import { IdeaService } from './idea.service';
 
-@Controller('idea')
+@Controller('api/idea')
 export class IdeaController {
   private logger = new Logger('IdeaController');
 
