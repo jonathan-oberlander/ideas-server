@@ -25,7 +25,7 @@ export class IdeaService {
   }
 
   private ensureOwnerShip(idea: Idea, userId: string) {
-    if (idea.author.uuid !== userId) {
+    if (idea?.author?.uuid !== userId) {
       throw new UnauthorizedException('Invalid User');
     }
   }
