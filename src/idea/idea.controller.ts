@@ -38,7 +38,7 @@ export class IdeaController {
   @Post()
   @UseGuards(AuthGuard)
   createIdea(
-    @User('uuid') user: string,
+    @User('uuid', ParseUUIDPipe) user: string,
     @Body(new ValidationPipe()) data: CreateIdeaDto,
   ) {
     this.logData({ user, data });
@@ -54,7 +54,7 @@ export class IdeaController {
   @UseGuards(AuthGuard)
   updateIdea(
     @Param('uuid', ParseUUIDPipe) id: string,
-    @User('uuid') user: string,
+    @User('uuid', ParseUUIDPipe) user: string,
     @Body(new ValidationPipe()) data: UpdateIdeaDto,
   ) {
     this.logData({ id, user, data });
@@ -65,7 +65,7 @@ export class IdeaController {
   @UseGuards(AuthGuard)
   destroyIdea(
     @Param('uuid', ParseUUIDPipe) id: string,
-    @User('uuid') user: string,
+    @User('uuid', ParseUUIDPipe) user: string,
   ) {
     this.logData({ id, user });
     return this.ideaService.destroy(id, user);

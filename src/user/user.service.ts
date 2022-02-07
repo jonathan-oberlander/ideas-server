@@ -13,17 +13,17 @@ import { User } from './user.entity';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRpository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   async showAll(): Promise<UserRO[]> {
-    const users = await this.userRpository.find({ relations: ['ideas'] });
+    const users = await this.userRepository.find({ relations: ['ideas'] });
     return users.map((user) => user.toResponseObject());
   }
 
   async login(data: UserDto): Promise<UserRO> {
     const { username, password } = data;
-    const user = await this.userRpository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({ where: { username } });
     if (!user || !(await user.matchPassword(password))) {
       throw new UnauthorizedException('Invalid username/password');
     }
@@ -32,12 +32,12 @@ export class UserService {
 
   async register(data: UserDto): Promise<UserRO> {
     const { username } = data;
-    let user = await this.userRpository.findOne({ where: { username } });
+    let user = await this.userRepository.findOne({ where: { username } });
     if (user) {
       throw new ForbiddenException('User already exists');
     }
-    user = this.userRpository.create(data);
-    await this.userRpository.save(user);
+    user = this.userRepository.create(data);
+    await this.userRepository.save(user);
     return user.toResponseObject({ showToken: true });
   }
 }
