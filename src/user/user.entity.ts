@@ -3,6 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,7 +17,7 @@ import { UserRO } from 'src/common/types';
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  uuid: string;
+  id: string;
 
   @CreateDateColumn()
   created: Date;
@@ -32,19 +34,24 @@ export class User {
   @OneToMany(() => Idea, (idea) => idea.author)
   ideas: Idea[];
 
+  @ManyToMany(() => Idea, { cascade: true })
+  @JoinTable()
+  bookmarks: Idea[];
+
   @BeforeInsert()
   private async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
   toResponseObject({ showToken } = { showToken: false }): UserRO {
-    const { uuid, created, username, token } = this;
+    const { id, created, username, token } = this;
     return {
-      uuid,
+      id,
       created,
       username,
       ...(showToken && { token }),
       ...(this.ideas && { ideas: this.ideas }),
+      ...(this.bookmarks && { bookmarks: this.bookmarks }),
     };
   }
 
@@ -53,11 +60,11 @@ export class User {
   }
 
   private get token() {
-    const { username, uuid } = this;
+    const { username, id } = this;
     return jwt.sign(
       {
         username,
-        uuid,
+        id,
       },
       process.env.SECRET,
       { expiresIn: '2d' },

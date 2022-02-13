@@ -1,6 +1,22 @@
 ## Description
 
-Ideas app server written with NestJs
+A place to see, post, vote and comment on ideas in the style of twitter or 
+reddit.
+
+## User stories
+
+- Authenticate users
+- Users can CRUD ideas
+- Users can upvote and downvote ideas
+- Users can bookmark ideas
+- Users can comment ideas
+- Can see Ideas in realtime
+
+## Stack
+
+- Database - PostgreSQL
+- REST API - Nest JS
+
 ## Installation
 
 ```bash

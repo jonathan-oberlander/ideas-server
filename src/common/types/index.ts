@@ -4,7 +4,7 @@ import { Idea } from 'src/idea/idea.entity';
 
 export interface UserToken extends JwtPayload {
   username: string;
-  uuid: string;
+  id: string;
 }
 
 export type RequestWithUserToken = Request & {
@@ -12,18 +12,21 @@ export type RequestWithUserToken = Request & {
 };
 
 export interface IdeaRO {
-  author: UserRO;
-  uuid: string;
+  id: string;
   created: Date;
   updated: Date;
   idea: string;
   description: string;
+  author: UserRO;
+  upvotes?: number;
+  downvotes?: number;
 }
 
 export interface UserRO {
-  uuid: string;
+  id: string;
   created: Date;
   username: string;
   token?: string;
   ideas?: Idea[];
+  bookmarks?: Idea[];
 }

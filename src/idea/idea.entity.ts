@@ -6,12 +6,14 @@ import {
   CreateDateColumn,
   ManyToOne,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity('idea')
 export class Idea {
   @PrimaryGeneratedColumn('uuid')
-  uuid: string;
+  id: string;
 
   @CreateDateColumn()
   created: Date;
@@ -27,4 +29,12 @@ export class Idea {
 
   @ManyToOne(() => User, (author) => author.ideas)
   author: User;
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  upvotes: User[];
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  downvotes: User[];
 }

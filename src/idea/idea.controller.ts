@@ -25,9 +25,11 @@ export class IdeaController {
   constructor(private ideaService: IdeaService) {}
 
   logData(options: any) {
-    options.id && this.logger.log('ID ' + JSON.stringify(options.id));
-    options.data && this.logger.log('DATA ' + JSON.stringify(options.data));
-    options.user && this.logger.log('USER ' + JSON.stringify(options.user));
+    options.ideaId &&
+      this.logger.log('IDEA_ID:' + JSON.stringify(options.ideaId));
+    options.userId &&
+      this.logger.log('USER_ID:' + JSON.stringify(options.userId));
+    options.data && this.logger.log('DATA:' + JSON.stringify(options.data));
   }
 
   @Get()
@@ -38,36 +40,76 @@ export class IdeaController {
   @Post()
   @UseGuards(AuthGuard)
   createIdea(
-    @User('uuid', ParseUUIDPipe) user: string,
+    @User('id', ParseUUIDPipe) userId: string,
     @Body(new ValidationPipe()) data: CreateIdeaDto,
   ) {
-    this.logData({ user, data });
-    return this.ideaService.create(user, data);
+    this.logData({ userId, data });
+    return this.ideaService.create(userId, data);
   }
 
-  @Get('/:uuid')
-  readIdea(@Param('uuid', ParseUUIDPipe) id: string) {
-    return this.ideaService.read(id);
+  @Get('/:id')
+  readIdea(@Param('id', ParseUUIDPipe) ideaId: string) {
+    return this.ideaService.read(ideaId);
   }
 
-  @Put('/:uuid')
+  @Put('/:id')
   @UseGuards(AuthGuard)
   updateIdea(
-    @Param('uuid', ParseUUIDPipe) id: string,
-    @User('uuid', ParseUUIDPipe) user: string,
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
     @Body(new ValidationPipe()) data: UpdateIdeaDto,
   ) {
-    this.logData({ id, user, data });
-    return this.ideaService.update(id, user, data);
+    this.logData({ ideaId, userId, data });
+    return this.ideaService.update(ideaId, userId, data);
   }
 
-  @Delete('/:uuid')
+  @Delete('/:id')
   @UseGuards(AuthGuard)
   destroyIdea(
-    @Param('uuid', ParseUUIDPipe) id: string,
-    @User('uuid', ParseUUIDPipe) user: string,
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
   ) {
-    this.logData({ id, user });
-    return this.ideaService.destroy(id, user);
+    this.logData({ ideaId, userId });
+    return this.ideaService.destroy(ideaId, userId);
+  }
+
+  @Post('/:id/bookmark')
+  @UseGuards(AuthGuard)
+  bookmarkIdea(
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
+  ) {
+    this.logData({ ideaId, userId });
+    return this.ideaService.bookmark(ideaId, userId);
+  }
+
+  @Delete('/:id/bookmark')
+  @UseGuards(AuthGuard)
+  unbookmarkIdea(
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
+  ) {
+    this.logData({ ideaId, userId });
+    return this.ideaService.unBookmark(ideaId, userId);
+  }
+
+  @Post('/:id/upvote')
+  @UseGuards(AuthGuard)
+  upvote(
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
+  ) {
+    this.logData({ ideaId, userId });
+    return this.ideaService.upvote(ideaId, userId);
+  }
+
+  @Post('/:id/downvote')
+  @UseGuards(AuthGuard)
+  downvote(
+    @Param('id', ParseUUIDPipe) ideaId: string,
+    @User('id', ParseUUIDPipe) userId: string,
+  ) {
+    this.logData({ ideaId, userId });
+    return this.ideaService.downvote(ideaId, userId);
   }
 }

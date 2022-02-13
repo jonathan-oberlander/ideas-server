@@ -17,8 +17,16 @@ export class UserService {
   ) {}
 
   async showAll(): Promise<UserRO[]> {
-    const users = await this.userRepository.find({ relations: ['ideas'] });
+    const users = await this.userRepository.find();
     return users.map((user) => user.toResponseObject());
+  }
+
+  async show(id: string): Promise<UserRO> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['ideas', 'bookmarks'],
+    });
+    return user.toResponseObject();
   }
 
   async login(data: UserDto): Promise<UserRO> {
