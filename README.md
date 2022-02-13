@@ -5,12 +5,12 @@ reddit.
 
 ## User stories
 
-- Authenticate users
-- Users can CRUD ideas
-- Users can upvote and downvote ideas
-- Users can bookmark ideas
-- Users can comment ideas
-- Can see Ideas in realtime
+- [x] Authenticate users
+- [x] Users can CRUD ideas
+- [x] Users can upvote and downvote ideas
+- [x] Users can bookmark ideas
+- [x] Users can comment ideas
+- [ ] Can see Ideas in realtime
 
 ## Stack
 
