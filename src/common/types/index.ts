@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
+import { Comment } from 'src/comment/comment.entity';
 import { Idea } from 'src/idea/idea.entity';
 
 export interface UserToken extends JwtPayload {
@@ -29,4 +30,8 @@ export interface UserRO {
   token?: string;
   ideas?: Idea[];
   bookmarks?: Idea[];
+}
+
+export interface CommentRO extends Omit<Comment, 'author'> {
+  author: UserRO;
 }

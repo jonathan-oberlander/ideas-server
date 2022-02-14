@@ -10,6 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { CreateCommentDTO } from 'src/comment/dto/create-comment.dto';
 
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';

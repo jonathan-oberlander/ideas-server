@@ -43,28 +43,28 @@ export class IdeaService {
 
   async showAll(): Promise<IdeaRO[]> {
     const ideas = await this.ideaRepository.find({
-      relations: ['author', 'upvotes', 'downvotes'],
+      relations: ['author', 'upvotes', 'downvotes', 'comments'],
     });
     return ideas.map(this.toResponseObject);
-  }
-
-  async create(userId: string, data: CreateIdeaDto): Promise<IdeaRO> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    const idea = this.ideaRepository.create({ ...data, author: user });
-    await this.ideaRepository.save(idea);
-    return this.toResponseObject(idea);
   }
 
   async read(id: string): Promise<IdeaRO> {
     const idea = await this.ideaRepository.findOne({
       where: { id },
-      relations: ['author', 'upvotes', 'downvotes'],
+      relations: ['author', 'upvotes', 'downvotes', 'comments'],
     });
 
     if (!idea) {
       throw new NotFoundException();
     }
 
+    return this.toResponseObject(idea);
+  }
+
+  async create(userId: string, data: CreateIdeaDto): Promise<IdeaRO> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const idea = this.ideaRepository.create({ ...data, author: user });
+    await this.ideaRepository.save(idea);
     return this.toResponseObject(idea);
   }
 
