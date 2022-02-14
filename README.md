@@ -9,7 +9,7 @@ reddit.
 - [x] Users can CRUD ideas
 - [x] Users can upvote and downvote ideas
 - [x] Users can bookmark ideas
-- [ ] Users can comment ideas
+- [x] Users can comment ideas
 - [ ] Can see Ideas in realtime
 
 ## Stack
