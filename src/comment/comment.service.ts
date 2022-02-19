@@ -42,34 +42,46 @@ export class CommentService {
 
   // TOW WAYS ACCESSING THE DATA
   // 1. Via the current entity
-  async showCommentByUser(userId: string, page = 1): Promise<CommentRO[]> {
+  async showCommentByUser(
+    userId: string,
+    page = 1,
+  ): Promise<{ comments: CommentRO[]; total: number }> {
     if (page - 1 < 0) {
       throw new BadRequestException(`Page must be >= 1`);
     }
 
-    const comments = await this.commentRepository.find({
+    const [comments, total] = await this.commentRepository.findAndCount({
       where: { author: { id: userId } },
       relations: ['author', 'idea'],
       take: 25,
       skip: 25 * (page - 1),
     });
 
-    return comments.map((comment) => this.toResponseObject(comment));
+    return {
+      comments: comments.map((comment) => this.toResponseObject(comment)),
+      total,
+    };
   }
 
-  async showCommentByIdea(ideaId: string, page = 1): Promise<CommentRO[]> {
+  async showCommentByIdea(
+    ideaId: string,
+    page = 1,
+  ): Promise<{ comments: CommentRO[]; total: number }> {
     if (page - 1 < 0) {
       throw new BadRequestException(`Page must be >= 1`);
     }
 
-    const comments = await this.commentRepository.find({
+    const [comments, total] = await this.commentRepository.findAndCount({
       where: { idea: { id: ideaId } },
       relations: ['author', 'idea'],
       take: 25,
       skip: 25 * (page - 1),
     });
 
-    return comments.map((comment) => this.toResponseObject(comment));
+    return {
+      comments: comments.map((comment) => this.toResponseObject(comment)),
+      total,
+    };
   }
 
   // 2. Via the related entity

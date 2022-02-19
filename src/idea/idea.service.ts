@@ -41,17 +41,22 @@ export class IdeaService {
 
   /********* CRUD IDEA *********/
 
-  async showAll(page = 1, newest?: boolean): Promise<IdeaRO[]> {
+  async showAll(
+    page = 1,
+    newest?: boolean,
+  ): Promise<{ ideas: IdeaRO[]; total: number }> {
     if (page - 1 < 0) {
       throw new BadRequestException(`Page must be >= 1`);
     }
-    const ideas = await this.ideaRepository.find({
+
+    const [ideas, total] = await this.ideaRepository.findAndCount({
       relations: ['author', 'upvotes', 'downvotes', 'comments'],
       take: 25,
       skip: 25 * (page - 1),
       order: newest && { created: 'DESC' },
     });
-    return ideas.map(this.toResponseObject);
+
+    return { ideas: ideas.map(this.toResponseObject), total };
   }
 
   async read(id: string): Promise<IdeaRO> {

@@ -18,17 +18,17 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async showAll(page = 1): Promise<UserRO[]> {
+  async showAll(page = 1): Promise<{ users: UserRO[]; total: number }> {
     if (page - 1 < 0) {
       throw new BadRequestException(`Page must be >= 1`);
     }
 
-    const users = await this.userRepository.find({
+    const [users, total] = await this.userRepository.findAndCount({
       take: 25,
       skip: 25 * (page - 1),
     });
 
-    return users.map((user) => user.toResponseObject());
+    return { users: users.map((user) => user.toResponseObject()), total };
   }
 
   async show(id: string): Promise<UserRO> {
