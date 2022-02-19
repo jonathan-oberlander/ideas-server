@@ -3,6 +3,7 @@
 A place to see, post, vote and comment on ideas in the style of twitter or 
 reddit.
 
+
 ## User stories
 
 - [x] Authenticate users
@@ -10,7 +11,6 @@ reddit.
 - [x] Users can upvote and downvote ideas
 - [x] Users can bookmark ideas
 - [x] Users can comment ideas
-- [ ] Can see Ideas in realtime
 
 ## Stack
 
@@ -35,6 +35,15 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Documentation
+
+Swagger documentation is visible here: `<baseURL>/documentation`
+
+## Graphql
+
+GraphQL playground is visible here: `<baseURL>/graphql`
+
 
 ## Test
 

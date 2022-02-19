@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import { IdeaModule } from './idea/idea.module';
 import { Idea } from './idea/idea.entity';
@@ -13,6 +15,7 @@ import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/comment.entity';
+import { join } from 'path';
 
 const {
   database: { port, host },
@@ -22,6 +25,13 @@ const {
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'src/common/types/graphql.ts'),
+      },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -35,6 +45,7 @@ const {
       synchronize: true,
       logging: true,
     }),
+
     IdeaModule,
     UserModule,
     CommentModule,
