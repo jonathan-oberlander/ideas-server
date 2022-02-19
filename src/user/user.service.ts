@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,8 +18,16 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async showAll(): Promise<UserRO[]> {
-    const users = await this.userRepository.find();
+  async showAll(page = 1): Promise<UserRO[]> {
+    if (page - 1 < 0) {
+      throw new BadRequestException(`Page must be >= 1`);
+    }
+
+    const users = await this.userRepository.find({
+      take: 25,
+      skip: 25 * (page - 1),
+    });
+
     return users.map((user) => user.toResponseObject());
   }
 
@@ -26,7 +36,12 @@ export class UserService {
       where: { id },
       relations: ['ideas', 'bookmarks'],
     });
-    return user.toResponseObject();
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+
+    return user?.toResponseObject();
   }
 
   async login(data: UserDto): Promise<UserRO> {

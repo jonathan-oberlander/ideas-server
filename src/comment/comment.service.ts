@@ -41,30 +41,44 @@ export class CommentService {
   }
 
   // TOW WAYS ACCESSING THE DATA
-
   // 1. Via the current entity
-  async showCommentByUser(userId: string): Promise<CommentRO[]> {
+  async showCommentByUser(userId: string, page = 1): Promise<CommentRO[]> {
+    if (page - 1 < 0) {
+      throw new BadRequestException(`Page must be >= 1`);
+    }
+
     const comments = await this.commentRepository.find({
-      where: {
-        author: {
-          id: userId,
-        },
-      },
+      where: { author: { id: userId } },
       relations: ['author', 'idea'],
+      take: 25,
+      skip: 25 * (page - 1),
+    });
+
+    return comments.map((comment) => this.toResponseObject(comment));
+  }
+
+  async showCommentByIdea(ideaId: string, page = 1): Promise<CommentRO[]> {
+    if (page - 1 < 0) {
+      throw new BadRequestException(`Page must be >= 1`);
+    }
+
+    const comments = await this.commentRepository.find({
+      where: { idea: { id: ideaId } },
+      relations: ['author', 'idea'],
+      take: 25,
+      skip: 25 * (page - 1),
     });
 
     return comments.map((comment) => this.toResponseObject(comment));
   }
 
   // 2. Via the related entity
-  async showCommentByIdea(ideaId: string): Promise<CommentRO[]> {
-    const idea = await this.ideaRepository.findOne({
-      where: { id: ideaId },
-      relations: ['comments', 'comments.author', 'comments.idea'],
-    });
+  // const idea = await this.ideaRepository.findOne({
+  //   where: { id: ideaId },
+  //   relations: ['comments', 'comments.author', 'comments.idea'],
+  // });
 
-    return idea.comments.map((comment) => this.toResponseObject(comment));
-  }
+  // return idea.comments.map((comment) => this.toResponseObject(comment));
 
   async createComment(
     ideaId: string,

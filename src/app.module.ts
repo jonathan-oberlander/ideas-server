@@ -27,6 +27,7 @@ const {
       type: 'postgres',
       host,
       port,
+      dropSchema: false,
       username: 'postgres',
       password: '',
       database: 'ideas',

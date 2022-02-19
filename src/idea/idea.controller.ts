@@ -8,9 +8,9 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateCommentDTO } from 'src/comment/dto/create-comment.dto';
 
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
@@ -19,7 +19,7 @@ import { CreateIdeaDto } from './dtos/create-idea.dto';
 import { UpdateIdeaDto } from './dtos/update-idea.dto';
 import { IdeaService } from './idea.service';
 
-@Controller('api/idea')
+@Controller('api/ideas')
 export class IdeaController {
   private logger = new Logger('IdeaController');
 
@@ -34,8 +34,13 @@ export class IdeaController {
   }
 
   @Get()
-  showAllIdeas() {
-    return this.ideaService.showAll();
+  showAllIdeas(@Query('page') page: number) {
+    return this.ideaService.showAll(page);
+  }
+
+  @Get('newest')
+  showNewest(@Query('page') page: number) {
+    return this.ideaService.showAll(page, true);
   }
 
   @Post()
