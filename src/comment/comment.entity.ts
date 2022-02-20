@@ -1,4 +1,3 @@
-import { CommentRO } from 'src/common/types';
 import { Idea } from 'src/idea/idea.entity';
 import { User } from 'src/user/user.entity';
 import {

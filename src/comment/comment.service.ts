@@ -24,7 +24,7 @@ export class CommentService {
 
   toResponseObject(comment: Comment): CommentRO {
     const responseObject = comment as unknown as CommentRO;
-    if (comment.author) {
+    if (comment?.author) {
       responseObject.author = comment.author.toResponseObject();
     }
 
@@ -34,6 +34,7 @@ export class CommentService {
   /******************************* CRUD *******************************/
 
   async showComment(commentId: string): Promise<CommentRO> {
+    console.log({ commentId });
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['author', 'idea'],
@@ -107,16 +108,15 @@ export class CommentService {
     return this.toResponseObject(comment);
   }
 
-  async destroy(
-    commentId: string,
-    userId: string,
-  ): Promise<{
-    deleted: CommentRO;
-  }> {
+  async destroy(commentId: string, userId: string): Promise<CommentRO> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['author', 'idea'],
     });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment: ${commentId} not found.`);
+    }
 
     if (comment.author.id !== userId) {
       throw new BadRequestException('You do not own this comment.');
@@ -124,8 +124,6 @@ export class CommentService {
 
     await this.commentRepository.remove(comment);
 
-    return {
-      deleted: this.toResponseObject(comment),
-    };
+    return this.toResponseObject(comment);
   }
 }

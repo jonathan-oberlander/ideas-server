@@ -11,12 +11,15 @@ reddit.
 - [x] Users can upvote and downvote ideas
 - [x] Users can bookmark ideas
 - [x] Users can comment ideas
-
+  
 ## Stack
 
+- Server - Nest JS
 - Database - PostgreSQL
 - REST API - Nest JS
-
+- GraphQL - Apollo
+- Auth - JWT
+  
 ## Installation
 
 ```bash
