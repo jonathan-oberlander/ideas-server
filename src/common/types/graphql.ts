@@ -29,6 +29,8 @@ export interface Idea {
 export interface IQuery {
     ideas(page?: Nullable<number>, newest?: Nullable<boolean>): Nullable<Idea[]> | Promise<Nullable<Idea[]>>;
     users(page?: Nullable<number>): Nullable<User[]> | Promise<Nullable<User[]>>;
+    user(username: string): User | Promise<User>;
+    whoami(): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface User {
@@ -38,6 +40,16 @@ export interface User {
     bookmarks?: Nullable<Idea[]>;
     ideas?: Nullable<Idea[]>;
     comments?: Nullable<Nullable<Comment>[]>;
+}
+
+export interface Auth {
+    token: string;
+    username: string;
+}
+
+export interface IMutation {
+    login(username: string, password: string): Nullable<Auth> | Promise<Nullable<Auth>>;
+    register(username: string, password: string): Nullable<Auth> | Promise<Nullable<Auth>>;
 }
 
 type Nullable<T> = T | null;

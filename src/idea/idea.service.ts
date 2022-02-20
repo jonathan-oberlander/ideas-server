@@ -45,12 +45,14 @@ export class IdeaService {
     if (page - 1 < 0) {
       throw new BadRequestException(`Page must be >= 1`);
     }
+
     const ideas = await this.ideaRepository.find({
       relations: ['author', 'upvotes', 'downvotes', 'comments'],
       take: 25,
       skip: 25 * (page - 1),
       order: newest && { created: 'DESC' },
     });
+
     return ideas.map(this.toResponseObject);
   }
 

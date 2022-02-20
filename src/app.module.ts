@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
@@ -15,7 +17,6 @@ import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/comment.entity';
-import { join } from 'path';
 
 const {
   database: { port, host },
@@ -32,6 +33,7 @@ const {
       definitions: {
         path: join(process.cwd(), 'src/common/types/graphql.ts'),
       },
+      context: ({ req }) => ({ req }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -45,7 +47,6 @@ const {
       synchronize: true,
       logging: true,
     }),
-
     IdeaModule,
     UserModule,
     CommentModule,

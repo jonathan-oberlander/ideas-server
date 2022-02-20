@@ -11,20 +11,22 @@ import { Request, Response } from 'express';
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
-    const errorResponse = {
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      method: request.method,
-      message: exception.message,
-    };
+    if (request && response) {
+      const errorResponse = {
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        method: request.method,
+        message: exception.message,
+      };
 
-    Logger.error(JSON.stringify(errorResponse), 'ExeptionFilter');
+      Logger.error(JSON.stringify(errorResponse), 'ExeptionFilter');
 
-    response.status(status).json(errorResponse);
+      response.status(status).json(errorResponse);
+    }
   }
 }

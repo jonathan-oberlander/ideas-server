@@ -45,23 +45,41 @@ export class UserService {
     return user?.toResponseObject();
   }
 
+  async showByName(username: string): Promise<UserRO> {
+    const user = await this.userRepository.findOne({
+      where: { username },
+      relations: ['ideas', 'bookmarks'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${username} not found`);
+    }
+
+    return user?.toResponseObject();
+  }
+
   async login(data: UserDto): Promise<UserRO> {
     const { username, password } = data;
     const user = await this.userRepository.findOne({ where: { username } });
+
     if (!user || !(await user.matchPassword(password))) {
       throw new UnauthorizedException('Invalid username/password');
     }
+
     return user.toResponseObject({ showToken: true });
   }
 
   async register(data: UserDto): Promise<UserRO> {
     const { username } = data;
     let user = await this.userRepository.findOne({ where: { username } });
+
     if (user) {
       throw new ForbiddenException('User already exists');
     }
+
     user = this.userRepository.create(data);
     await this.userRepository.save(user);
+
     return user.toResponseObject({ showToken: true });
   }
 }

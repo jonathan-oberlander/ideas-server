@@ -9,12 +9,15 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('api/users')
-  showAllUsers(@Query('page') page: number) {
+  showAllUsers(@Query() { page, name }) {
+    if (name) {
+      return this.userService.showByName(name);
+    }
     return this.userService.showAll(page);
   }
 
   @Get('api/users/:id')
-  showUser(@Param('id') id: string) {
+  showUserById(@Param('id') id: string) {
     return this.userService.show(id);
   }
 
