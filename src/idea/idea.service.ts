@@ -83,7 +83,6 @@ export class IdeaService {
   ): Promise<IdeaRO> {
     const idea = await this.ideaRepository.findOne({
       where: { id: ideaId },
-      relations: ['author'],
     });
 
     if (!idea) {
@@ -96,15 +95,9 @@ export class IdeaService {
     return await this.read(ideaId);
   }
 
-  async destroy(
-    ideaId: string,
-    userId: string,
-  ): Promise<{
-    deleted: IdeaRO;
-  }> {
+  async destroy(ideaId: string, userId: string): Promise<IdeaRO> {
     const idea = await this.ideaRepository.findOne({
       where: { id: ideaId },
-      relations: ['author'],
     });
 
     if (!idea) {
@@ -114,7 +107,7 @@ export class IdeaService {
     this.ensureOwnerShip(idea, userId);
 
     await this.ideaRepository.delete(ideaId);
-    return { deleted: this.toResponseObject(idea) };
+    return this.toResponseObject(idea);
   }
 
   /********* BOOKMARK *********/

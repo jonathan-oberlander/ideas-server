@@ -15,6 +15,7 @@ export interface Comment {
 
 export interface IQuery {
     comment(commentId: string): Nullable<Comment> | Promise<Nullable<Comment>>;
+    idea(ideaId: string): Idea | Promise<Idea>;
     ideas(page?: Nullable<number>, newest?: Nullable<boolean>): Nullable<Idea[]> | Promise<Nullable<Idea[]>>;
     users(page?: Nullable<number>): Nullable<User[]> | Promise<Nullable<User[]>>;
     user(username: string): User | Promise<User>;
@@ -24,6 +25,13 @@ export interface IQuery {
 export interface IMutation {
     createComment(ideaId: string, comment: string): Nullable<Comment> | Promise<Nullable<Comment>>;
     deleteComment(commentId: string): Nullable<Comment> | Promise<Nullable<Comment>>;
+    createIdea(idea: string, description: string): Idea | Promise<Idea>;
+    updateIdea(ideaId: string, idea?: Nullable<string>, description?: Nullable<string>): Idea | Promise<Idea>;
+    deleteIdea(ideaId: string): Idea | Promise<Idea>;
+    upvote(ideaId: string): Idea | Promise<Idea>;
+    downvote(ideaId: string): Idea | Promise<Idea>;
+    bookmark(ideaId: string): User | Promise<User>;
+    unBookmark(ideaId: string): User | Promise<User>;
     login(username: string, password: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     register(username: string, password: string): Nullable<Auth> | Promise<Nullable<Auth>>;
 }
